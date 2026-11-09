@@ -1,0 +1,1743 @@
+<!doctype html>
+<html lang="bg">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7faff" />
+    <title>Лов на съкровища</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&display=swap');
+
+      :root {
+        color-scheme: dark;
+        --bg: #0d100d;
+        --panel: #181c17;
+        --panel-2: #20251e;
+        --line: #363d32;
+        --text: #f5ecdc;
+        --muted: #aaa494;
+        --gold: #e6b957;
+        --gold-light: #f4d993;
+        --red: #e07858;
+        --green: #86b57c;
+        --safe-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        min-width: 320px;
+        background: var(--bg);
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        font-size: 16px;
+        font-family: 'Sofia Sans', sans-serif;
+        background:
+          radial-gradient(circle at 85% -10%, rgba(230, 185, 87, 0.14), transparent 32rem),
+          radial-gradient(circle at -10% 70%, rgba(79, 117, 69, 0.1), transparent 30rem), var(--bg);
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 2px solid var(--gold);
+        outline-offset: 3px;
+      }
+      .shell {
+        width: min(100%, 720px);
+        margin: 0 auto;
+        min-height: 100vh;
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        padding: 12px 16px 10px;
+        background: rgba(13, 16, 13, 0.93);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(16px);
+      }
+      .topline {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 10px;
+      }
+      .clock:last-child {
+        text-align: right;
+      }
+      .clock span {
+        display: block;
+        color: var(--muted);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .clock strong {
+        font-variant-numeric: tabular-nums;
+        font-size: 15px;
+      }
+      .brand {
+        color: var(--gold);
+        font:
+          700 20px Georgia,
+          serif;
+      }
+      .progress-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 9px;
+        color: var(--muted);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .progress-meta strong {
+        color: var(--gold-light);
+        font-size: 11px;
+      }
+      .progress-line {
+        height: 3px;
+        margin-top: 5px;
+        background: #292e27;
+        overflow: hidden;
+        border-radius: 3px;
+      }
+      .progress-line i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--gold);
+        transition: width 0.35s ease;
+      }
+      main {
+        padding: 22px 16px calc(42px + var(--safe-bottom));
+      }
+      .hero {
+        padding: 9vh 5px 30px;
+      }
+      .sigil {
+        width: 66px;
+        height: 66px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 26px;
+        border: 1px solid #715e33;
+        border-radius: 50%;
+        background: #211e14;
+        color: var(--gold);
+        font-size: 31px;
+      }
+      .eyebrow {
+        color: var(--gold);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 8px 0 14px;
+        font:
+          700 clamp(32px, 9vw, 50px)/1.08 Georgia,
+          serif;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        margin: 0;
+        font:
+          700 23px/1.2 Georgia,
+          serif;
+      }
+      p {
+        margin: 0 0 16px;
+      }
+      .lead {
+        color: #cbc2b2;
+        font-size: 17px;
+      }
+      .card {
+        margin-top: 18px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: linear-gradient(145deg, rgba(30, 34, 29, 0.98), rgba(21, 24, 20, 0.98));
+        box-shadow: 0 22px 70px rgba(0, 0, 0, 0.28);
+      }
+      .field {
+        margin-top: 16px;
+      }
+      label {
+        display: block;
+        margin-bottom: 7px;
+        color: #d3c9b8;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      input,
+      select {
+        width: 100%;
+        min-height: 52px;
+        padding: 12px 13px;
+        color: var(--text);
+        background: #10130f;
+        border: 1px solid #40483b;
+        border-radius: 9px;
+      }
+      input::placeholder {
+        color: #716d63;
+      }
+      .btn {
+        width: 100%;
+        min-height: 52px;
+        margin-top: 18px;
+        padding: 12px 16px;
+        border: 1px solid #4a5044;
+        border-radius: 9px;
+        background: #242a22;
+        color: var(--text);
+        font-weight: 750;
+        cursor: pointer;
+        transition: 0.15s ease;
+      }
+      .btn:hover {
+        background: #2e352b;
+        transform: translateY(-1px);
+      }
+      .btn.primary {
+        color: #1a160d;
+        background: var(--gold);
+        border-color: var(--gold);
+      }
+      .btn.primary:hover {
+        background: var(--gold-light);
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: wait;
+        transform: none;
+      }
+      .btn.secondary {
+        background: transparent;
+      }
+      .step-image {
+        display: block;
+        width: calc(100% + 32px);
+        max-height: 300px;
+        margin: -22px -16px 25px;
+        object-fit: cover;
+        border-bottom: 1px solid var(--line);
+      }
+      .step-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 14px;
+      }
+      .step-count {
+        color: var(--muted);
+        white-space: nowrap;
+        font-size: 12px;
+      }
+      .description {
+        margin-top: 16px;
+        color: #d4cbbc;
+        white-space: pre-wrap;
+      }
+      .challenge {
+        margin-top: 22px;
+      }
+      .definition {
+        padding: 17px;
+        border-left: 3px solid var(--gold);
+        background: #151914;
+        font:
+          18px/1.55 Georgia,
+          serif;
+      }
+      .bag-card {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        background: rgba(24, 28, 23, 0.82);
+      }
+      .bag-title {
+        margin-bottom: 9px;
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .bag {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+      .word {
+        padding: 5px 10px;
+        border: 1px solid #53624e;
+        border-radius: 999px;
+        background: #1b2719;
+        color: #bdd2b7;
+        font-size: 13px;
+      }
+      .empty-bag {
+        color: var(--muted);
+        font-size: 13px;
+        font-style: italic;
+      }
+      .hint-box {
+        margin-top: 18px;
+        padding: 16px;
+        border: 1px dashed #665936;
+        border-radius: 10px;
+        background: rgba(89, 71, 31, 0.12);
+      }
+      .hint-box button {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: var(--gold-light);
+        cursor: pointer;
+        text-align: left;
+        font-weight: 700;
+      }
+      .hint-box p {
+        margin: 0;
+        color: #dfd1b7;
+        white-space: pre-wrap;
+      }
+      .penalty {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 400;
+      }
+      .sentence {
+        display: block;
+        padding: 14px;
+        background: #141713;
+        border-radius: 10px;
+        font:
+          17px/2.5 Georgia,
+          serif;
+      }
+      .sentence span {
+        display: inline;
+      }
+      .sentence select {
+        display: inline-block;
+        width: auto;
+        min-width: 92px;
+        max-width: 155px;
+        min-height: 36px;
+        margin: 0 3px;
+        padding: 3px 25px 3px 7px;
+        vertical-align: middle;
+        color: var(--gold-light);
+        font:
+          15px/1.2 Georgia,
+          serif;
+        border-style: dashed;
+      }
+      .scan-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 9px;
+        align-items: end;
+      }
+      .scan-row .btn {
+        width: auto;
+        min-width: 92px;
+        margin: 0;
+      }
+      .countdown {
+        margin: 25px 0;
+        color: var(--gold-light);
+        font: 700 clamp(34px, 12vw, 64px)/1 monospace;
+        letter-spacing: -0.06em;
+      }
+      .notice {
+        padding: 15px;
+        border: 1px solid #665936;
+        border-radius: 10px;
+        background: rgba(89, 71, 31, 0.12);
+        color: #dfd1b7;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin: 22px 0;
+      }
+      .stat {
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #171b16;
+      }
+      .stat span {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .stat strong {
+        display: block;
+        margin-top: 5px;
+        font-size: 18px;
+      }
+      .organizers {
+        padding: 18px;
+        border-left: 3px solid var(--green);
+        background: rgba(75, 105, 67, 0.13);
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: calc(20px + var(--safe-bottom));
+        z-index: 100;
+        width: min(calc(100% - 32px), 560px);
+        padding: 13px 16px;
+        transform: translate(-50%, 24px);
+        opacity: 0;
+        pointer-events: none;
+        border: 1px solid #884c3b;
+        border-radius: 10px;
+        background: #321d18;
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.38);
+        transition: 0.2s ease;
+      }
+      .toast.success {
+        border: none !important;
+        background: var(--green) !important;
+      }
+      .toast.show {
+        transform: translate(-50%, 0);
+        opacity: 1;
+      }
+      .busy {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        display: none;
+        place-items: center;
+        background: rgba(8, 10, 8, 0.78);
+        backdrop-filter: blur(5px);
+      }
+      .busy.show {
+        display: grid;
+      }
+      .busy-card {
+        width: min(330px, calc(100% - 38px));
+        padding: 25px;
+        text-align: center;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--panel);
+      }
+      .modal {
+        position: fixed;
+        inset: 0;
+        z-index: 110;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        background: rgba(8, 10, 8, 0.82);
+        backdrop-filter: blur(7px);
+      }
+      .modal[hidden] {
+        display: none;
+      }
+      .modal-card {
+        width: min(100%, 420px);
+        padding: 24px;
+        border: 1px solid #675937;
+        border-radius: 16px;
+        background: linear-gradient(145deg, #22261f, #171a16);
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.55);
+      }
+      .modal-mark {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 17px;
+        border: 1px solid #786536;
+        border-radius: 50%;
+        background: #292315;
+        color: var(--gold);
+        font:
+          700 25px Georgia,
+          serif;
+      }
+      .modal-card p {
+        margin-top: 10px;
+        color: #cfc5b4;
+      }
+      .modal-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .modal-actions .btn {
+        margin: 0;
+      }
+      .spinner {
+        width: 34px;
+        height: 34px;
+        margin: 0 auto 14px;
+        border: 3px solid #485044;
+        border-top-color: var(--gold);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .scanner {
+        position: fixed;
+        inset: 0;
+        z-index: 80;
+        display: none;
+        flex-direction: column;
+        background: #080a08;
+      }
+      .scanner.show {
+        display: flex;
+      }
+      .scanner video {
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+        object-fit: cover;
+      }
+      .scanner-ui {
+        padding: 18px 16px calc(18px + var(--safe-bottom));
+        text-align: center;
+        background: #10130f;
+      }
+      .scanner-ui p {
+        color: var(--muted);
+      }
+      @media (min-width: 640px) {
+        main {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
+        .step-image {
+          width: 100%;
+          margin: 0 0 26px;
+          border: 1px solid var(--line);
+          border-radius: 14px;
+        }
+        .card {
+          padding: 24px;
+        }
+      }
+      @media (max-width: 390px) {
+        .sentence {
+          padding: 12px;
+          font-size: 16px;
+        }
+        .sentence select {
+          min-width: 78px;
+          max-width: 125px;
+          margin: 0 2px;
+          padding-left: 5px;
+          font-size: 14px;
+        }
+      }
+    </style>
+    <style>
+      /* Visual theme inspired by the supplied “Аз мога — тук и сега!” portal. */
+      :root {
+        color-scheme: light;
+        --bg: #f7faff;
+        --panel: #ffffff;
+        --panel-2: #edf5fc;
+        --line: #d7e2ef;
+        --text: #203653;
+        --muted: #6f8198;
+        --gold: #8258b0;
+        --gold-light: #a579c9;
+        --red: #e45151;
+        --green: #2e9149;
+        --green-light: #eaf8ef;
+        --purple-light: #f3ecfb;
+        --blue-light: #e6f1fb;
+        --yellow-light: #fff6df;
+      }
+
+      html {
+        background: var(--bg);
+      }
+
+      body {
+        position: relative;
+        overflow-x: hidden;
+        color: var(--text);
+        font-family: 'Sofia Sans', sans-serif;
+        font-weight: 500;
+        background:
+          radial-gradient(circle at -2% 18%, rgba(111, 166, 213, 0.2) 0 124px, transparent 125px),
+          radial-gradient(circle at 98% 16%, rgba(231, 113, 122, 0.14) 0 78px, transparent 79px),
+          radial-gradient(circle at 94% 72%, rgba(130, 88, 176, 0.12) 0 104px, transparent 105px),
+          radial-gradient(circle at 4% 86%, rgba(65, 158, 91, 0.13) 0 112px, transparent 113px),
+          var(--bg);
+      }
+
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 1000;
+        height: 4px;
+        pointer-events: none;
+        background: linear-gradient(
+          90deg,
+          #1c6bb5 0 21%,
+          #e53d43 21% 42%,
+          #ef9c24 42% 61%,
+          #329451 61% 79%,
+          #865cae 79%
+        );
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid rgba(45, 111, 179, 0.28);
+        outline-offset: 2px;
+      }
+
+      .shell {
+        width: min(100%, 960px);
+        position: relative;
+      }
+
+      .topbar {
+        top: 4px;
+        padding: 14px 22px 13px;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--line);
+        border-top: 0;
+        border-radius: 0 0 18px 18px;
+        box-shadow: 0 10px 30px rgba(39, 69, 102, 0.08);
+        backdrop-filter: blur(18px);
+      }
+
+      .clock span,
+      .progress-meta {
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: 0.1em;
+      }
+
+      .clock strong {
+        color: var(--text);
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      .brand {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border: 1px solid #cfe0f1;
+        border-radius: 13px;
+        color: #216ab1;
+        background: var(--blue-light);
+        font-family: inherit;
+        font-size: 22px;
+        font-weight: 800;
+      }
+
+      .progress-meta {
+        margin-top: 11px;
+      }
+
+      .progress-meta strong {
+        color: #71509b;
+        font-size: 11px;
+      }
+
+      .progress-line {
+        height: 6px;
+        margin-top: 7px;
+        border-radius: 999px;
+        background: #e5edf6;
+      }
+
+      .progress-line i {
+        border-radius: inherit;
+        background: linear-gradient(90deg, #2c74ba, #835bb1);
+      }
+
+      main {
+        padding: 46px 24px calc(56px + var(--safe-bottom));
+      }
+
+      .hero {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: clamp(36px, 8vh, 76px) 0 36px;
+      }
+
+      .sigil {
+        width: 62px;
+        height: 62px;
+        margin-bottom: 22px;
+        border: 1px solid #bfd8ef;
+        border-radius: 18px;
+        color: #206bb3;
+        background: var(--blue-light);
+        box-shadow: 0 8px 22px rgba(38, 104, 168, 0.1);
+        font-family: inherit;
+        font-size: 29px;
+        font-weight: 800;
+      }
+
+      .eyebrow {
+        color: #8159ac;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+      }
+
+      h1 {
+        margin: 8px 0 15px;
+        color: var(--text);
+        font-family: 'Sofia Sans', sans-serif;
+        font-size: clamp(34px, 7vw, 52px);
+        font-weight: 850;
+        line-height: 1.08;
+        letter-spacing: -0.035em;
+      }
+
+      h2 {
+        color: var(--text);
+        font-family: 'Sofia Sans', sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+      }
+
+      .lead {
+        max-width: 680px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.65;
+      }
+
+      .card {
+        margin-top: 24px;
+        padding: 28px;
+        border: 1px solid #d3c2e7;
+        border-top: 3px solid #8159ad;
+        border-radius: 22px;
+        background: linear-gradient(145deg, rgba(247, 241, 253, 0.98), rgba(241, 233, 250, 0.95));
+        box-shadow: 0 18px 45px rgba(69, 81, 108, 0.09);
+      }
+
+      .field {
+        margin-top: 18px;
+      }
+
+      label {
+        margin-bottom: 8px;
+        color: #536981;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      input,
+      select {
+        min-height: 54px;
+        padding: 13px 15px;
+        color: var(--text);
+        background: #ffffff;
+        border: 1px solid #c9d8e7;
+        border-radius: 12px;
+        box-shadow: inset 0 1px 2px rgba(36, 66, 98, 0.03);
+      }
+
+      input::placeholder {
+        color: #9aabba;
+      }
+
+      input:hover,
+      select:hover {
+        border-color: #9dbad5;
+      }
+
+      .btn {
+        min-height: 54px;
+        margin-top: 20px;
+        padding: 13px 18px;
+        border: 1px solid #aac1d8;
+        border-radius: 11px;
+        color: #254665;
+        background: #ffffff;
+        box-shadow: 0 5px 14px rgba(37, 67, 99, 0.08);
+        font-weight: 800;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease,
+          background 0.15s ease;
+      }
+
+      .btn:hover {
+        background: #f4f8fc;
+        box-shadow: 0 8px 18px rgba(37, 67, 99, 0.12);
+        transform: translateY(-1px);
+      }
+
+      .btn.primary {
+        color: #ffffff;
+        background: var(--green);
+        border-color: var(--green);
+        box-shadow: 0 7px 16px rgba(46, 145, 73, 0.19);
+      }
+
+      .btn.primary:hover {
+        background: #247f3c;
+        border-color: #247f3c;
+      }
+
+      .btn.secondary {
+        color: #275071;
+        background: #ffffff;
+      }
+
+      .step-image {
+        width: 100%;
+        max-height: 370px;
+        margin: 0 0 24px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        box-shadow: 0 14px 35px rgba(52, 79, 109, 0.1);
+      }
+
+      .step-heading {
+        align-items: flex-start;
+      }
+
+      .step-heading h1 {
+        font-size: clamp(30px, 6vw, 46px);
+      }
+
+      .step-count {
+        padding: 7px 10px;
+        border: 1px solid #cbdced;
+        border-radius: 999px;
+        color: #376a9b;
+        background: var(--blue-light);
+        font-weight: 800;
+      }
+
+      .description {
+        color: #526a82;
+        line-height: 1.7;
+      }
+
+      .definition {
+        padding: 18px;
+        border: 1px solid #bfd9c6;
+        border-left: 4px solid var(--green);
+        border-radius: 12px;
+        color: #294d37;
+        background: var(--green-light);
+        font-family: inherit;
+        font-size: 17px;
+      }
+
+      .bag-card {
+        margin-top: 18px;
+        padding: 18px;
+        border: 1px solid #bbd9c4;
+        border-top: 3px solid var(--green);
+        border-radius: 18px;
+        background: rgba(234, 248, 239, 0.96);
+        box-shadow: 0 12px 32px rgba(54, 103, 70, 0.07);
+      }
+
+      .bag-title {
+        color: #2d7543;
+        font-weight: 800;
+      }
+
+      .word {
+        padding: 6px 11px;
+        border: 1px solid #8fc59e;
+        color: #28623a;
+        background: #ffffff;
+        font-weight: 700;
+      }
+
+      .empty-bag {
+        color: #63816d;
+      }
+
+      .hint-box {
+        margin-top: 20px;
+        padding: 17px;
+        border: 1px dashed #d3aa55;
+        border-radius: 13px;
+        background: var(--yellow-light);
+      }
+
+      .hint-box button {
+        color: #8a641b;
+      }
+
+      .hint-box p {
+        color: #705925;
+      }
+
+      .penalty {
+        color: #887448;
+      }
+
+      .sentence {
+        padding: 16px;
+        border: 1px solid #d4dfea;
+        border-radius: 13px;
+        color: var(--text);
+        background: #ffffff;
+        font-family: inherit;
+      }
+
+      .sentence select {
+        color: #704a9b;
+        font-family: inherit;
+      }
+
+      .countdown {
+        color: #71509a;
+      }
+
+      .notice {
+        border: 1px solid #e2c177;
+        border-radius: 13px;
+        color: #705925;
+        background: var(--yellow-light);
+      }
+
+      .stat {
+        border: 1px solid #d2e0ee;
+        border-radius: 13px;
+        background: #ffffff;
+      }
+
+      .stat span {
+        color: var(--muted);
+        font-weight: 750;
+      }
+
+      .organizers {
+        border: 1px solid #b7d8c0;
+        border-left: 4px solid var(--green);
+        border-radius: 13px;
+        color: #315d3e;
+        background: var(--green-light);
+      }
+
+      .toast {
+        color: #7d3028;
+        border: 1px solid #edaaa2;
+        border-radius: 13px;
+        background: #fff0ee;
+        box-shadow: 0 18px 45px rgba(50, 71, 95, 0.18);
+        font-weight: 700;
+      }
+
+      .toast.success {
+        color: #ffffff;
+        background: var(--green) !important;
+      }
+
+      .busy,
+      .modal {
+        background: rgba(31, 53, 82, 0.45);
+        backdrop-filter: blur(8px);
+      }
+
+      .busy-card,
+      .modal-card {
+        color: var(--text);
+        border: 1px solid #cfddec;
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow: 0 28px 80px rgba(30, 53, 82, 0.22);
+      }
+
+      .modal-mark {
+        border: 1px solid #d4c1e6;
+        border-radius: 15px;
+        color: #7750a1;
+        background: var(--purple-light);
+        font-family: inherit;
+      }
+
+      .modal-card p {
+        color: #687d92;
+      }
+
+      .spinner {
+        border-color: #dce5ee;
+        border-top-color: #2c72b7;
+      }
+
+      .scanner {
+        background: #14243a;
+      }
+
+      .scanner-ui {
+        color: var(--text);
+        background: #ffffff;
+      }
+
+      @media (min-width: 640px) {
+        main {
+          padding-left: 34px;
+          padding-right: 34px;
+        }
+
+        .card {
+          padding: 32px;
+        }
+      }
+
+      @media (max-width: 639px) {
+        body {
+          background:
+            radial-gradient(circle at -12% 16%, rgba(111, 166, 213, 0.16) 0 95px, transparent 96px),
+            radial-gradient(circle at 108% 75%, rgba(130, 88, 176, 0.1) 0 86px, transparent 87px),
+            var(--bg);
+        }
+
+        .topbar {
+          padding: 12px 14px 11px;
+          border-left: 0;
+          border-right: 0;
+          border-radius: 0 0 14px 14px;
+        }
+
+        .clock span {
+          max-width: 112px;
+          line-height: 1.25;
+        }
+
+        .brand {
+          width: 38px;
+          height: 38px;
+          border-radius: 12px;
+        }
+
+        main {
+          padding: 26px 16px calc(42px + var(--safe-bottom));
+        }
+
+        .hero {
+          padding-top: 42px;
+        }
+
+        .card {
+          padding: 21px;
+          border-radius: 18px;
+        }
+
+        .step-image {
+          border-radius: 17px;
+        }
+
+        .step-heading {
+          display: block;
+        }
+
+        .step-count {
+          display: inline-block;
+          margin-bottom: 14px;
+        }
+
+        .scan-row {
+          grid-template-columns: 1fr;
+        }
+
+        .scan-row .btn {
+          width: 100%;
+          margin-top: 9px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header id="topbar" class="topbar" hidden>
+        <div class="topline">
+          <div class="clock">
+            <span>Време + наказания</span><strong id="elapsed">00:00:00</strong>
+          </div>
+          <div class="brand">⌖</div>
+          <div class="clock"><span>До края</span><strong id="remaining">00:00:00</strong></div>
+        </div>
+        <div class="progress-meta">
+          <span>Напредък</span><strong id="progressText">Стъпка 1 от 1</strong>
+        </div>
+        <div class="progress-line"><i id="progress"></i></div>
+      </header>
+      <main id="app">
+        <div class="hero">
+          <div class="sigil">⌖</div>
+          <div class="eyebrow">Подготовка</div>
+          <h1>Зареждане на лова…</h1>
+        </div>
+      </main>
+    </div>
+    <div id="toast" class="toast" role="alert"></div>
+    <div id="busy" class="busy">
+      <div class="busy-card">
+        <div class="spinner"></div>
+        <strong id="busyText">Проверка на отговора…</strong>
+      </div>
+    </div>
+    <div
+      id="hintModal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="hintModalTitle"
+      hidden>
+      <div class="modal-card">
+        <div class="modal-mark">?</div>
+        <h2 id="hintModalTitle">Да разкрием ли подсказката?</h2>
+        <p>
+          Тя ще остане видима до края на тази стъпка, но ще добави <strong>3 минути</strong> към
+          крайното време на отбора.
+        </p>
+        <div class="modal-actions">
+          <button id="cancelHint" class="btn secondary" type="button">Отказ</button
+          ><button id="acceptHint" class="btn primary" type="button">Приемам</button>
+        </div>
+      </div>
+    </div>
+    <div id="scanner" class="scanner">
+      <video id="scannerVideo" playsinline muted></video>
+      <div class="scanner-ui">
+        <h2>Сканиране на знак</h2>
+        <p>Насочете камерата към QR кода.</p>
+        <button id="stopScanner" class="btn secondary">Отказ</button>
+      </div>
+    </div>
+
+    <script>
+      (() => {
+        'use strict';
+        const START_PASSWORD = '__start';
+        const PENALTY_MS = 3 * 60 * 1000;
+        const CRYPTO = { saltLength: 32, iterations: 600000, ivLength: 12, keyLength: 256 };
+        const $ = (selector, root = document) => root.querySelector(selector);
+        const esc = (value = '') =>
+          String(value).replace(
+            /[&<>'"]/g,
+            char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]
+          );
+        let metadata = null;
+        let huntBytes = null;
+        let storageKey = '';
+        let state = null;
+        let gate = '';
+        let timer = 0;
+        let sentenceSelections = [];
+        let scannerStream = null;
+        let scannerFrame = 0;
+
+        const bytesToBase64 = bytes => {
+          let binary = '';
+          for (let offset = 0; offset < bytes.length; offset += 0x8000)
+            binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+          return btoa(binary);
+        };
+        const base64ToBytes = value => Uint8Array.from(atob(value), char => char.charCodeAt(0));
+        const formatDuration = milliseconds => {
+          const seconds = Math.max(0, Math.floor(milliseconds / 1000));
+          const hours = Math.floor(seconds / 3600);
+          const minutes = Math.floor((seconds % 3600) / 60);
+          return [hours, minutes, seconds % 60]
+            .map(value => String(value).padStart(2, '0'))
+            .join(':');
+        };
+        const formatDate = milliseconds =>
+          new Intl.DateTimeFormat('bg-BG', { dateStyle: 'medium', timeStyle: 'medium' }).format(
+            new Date(milliseconds)
+          );
+        const parseTime = value => {
+          const parsed = typeof value === 'number' ? value : Date.parse(value);
+          return Number.isFinite(parsed) ? parsed : NaN;
+        };
+
+        async function huntHash() {
+          if (metadata.hash && !/^sha256\s*\.\.\.$/i.test(metadata.hash.trim()))
+            return metadata.hash.trim();
+          const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', huntBytes));
+          return Array.from(digest, byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function deriveWrapper(password, salt) {
+          const material = await crypto.subtle.importKey(
+            'raw',
+            new TextEncoder().encode(password),
+            { name: 'PBKDF2' },
+            false,
+            ['deriveKey']
+          );
+          return crypto.subtle.deriveKey(
+            { name: 'PBKDF2', hash: 'SHA-256', salt, iterations: CRYPTO.iterations },
+            material,
+            { name: 'AES-GCM', length: CRYPTO.keyLength },
+            false,
+            ['unwrapKey']
+          );
+        }
+
+        async function decodeStep(encoded, password) {
+          if (encoded.byteLength < CRYPTO.ivLength + CRYPTO.saltLength + 4)
+            throw new Error('Повредени данни на лова.');
+          let offset = 0;
+          const iv = encoded.slice(offset, offset + CRYPTO.ivLength);
+          offset += iv.byteLength;
+          const salt = encoded.slice(offset, offset + CRYPTO.saltLength);
+          offset += salt.byteLength;
+          const wrappedLength = new DataView(
+            encoded.buffer,
+            encoded.byteOffset,
+            encoded.byteLength
+          ).getUint32(offset);
+          offset += 4;
+          if (wrappedLength <= 0 || offset + wrappedLength >= encoded.byteLength)
+            throw new Error('Повредени данни на лова.');
+          const wrapped = encoded.slice(offset, offset + wrappedLength);
+          offset += wrapped.byteLength;
+          const wrapper = await deriveWrapper(password, salt);
+          const key = await crypto.subtle.unwrapKey(
+            'raw',
+            wrapped,
+            wrapper,
+            { name: 'AES-GCM', iv },
+            { name: 'AES-GCM', length: CRYPTO.keyLength },
+            true,
+            ['decrypt']
+          );
+          const plain = new Uint8Array(
+            await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encoded.slice(offset))
+          );
+          if (plain.byteLength < 4) throw new Error('Повредени данни на лова.');
+          const dataLength = new DataView(
+            plain.buffer,
+            plain.byteOffset,
+            plain.byteLength
+          ).getUint32(0);
+          if (dataLength > plain.byteLength - 4) throw new Error('Повредени данни на лова.');
+          return {
+            data: JSON.parse(new TextDecoder().decode(plain.slice(4, 4 + dataLength))),
+            nextEncodedStep: plain.slice(4 + dataLength)
+          };
+        }
+
+        function saveState() {
+          if (!storageKey || !state) return;
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(state));
+          } catch (error) {
+            console.error('Състоянието не можа да бъде запазено.', error);
+            showToast('Този браузър не позволява запазване на напредъка.');
+          }
+        }
+
+        function loadState() {
+          try {
+            const saved = localStorage.getItem(storageKey);
+            if (!saved) return null;
+            const parsed = JSON.parse(saved);
+            if (parsed?.version !== 1 || !parsed.teamId || !parsed.currentStep)
+              throw new Error('Невалидно състояние.');
+            return parsed;
+          } catch (error) {
+            console.error('Запазеният напредък е повреден.', error);
+            return { broken: true };
+          }
+        }
+
+        function webhookUrl() {
+          const token = String(metadata.webhookToken || '').trim();
+          if (!token || /\.\.\.$/.test(token)) return '';
+          return /^https?:\/\//i.test(token) ? token : (
+              `https://webhook.site/${encodeURIComponent(token)}`
+            );
+        }
+
+        function sendEvent(event, details = {}) {
+          const url = webhookUrl();
+          if (!url || !state?.teamId) return;
+          const body = JSON.stringify({
+            event,
+            teamId: state.teamId,
+            occurredAt: new Date().toISOString(),
+            ...details
+          });
+          try {
+            fetch(url, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+              body,
+              keepalive: true
+            }).catch(error => console.warn('Събитието не беше изпратено.', error));
+          } catch (error) {
+            console.warn('Събитието не беше изпратено.', error);
+          }
+        }
+
+        function showSuccess(message) {
+          const toast = $('#toast');
+          toast.textContent = message;
+          toast.classList.add('show');
+          toast.classList.add('success');
+          clearTimeout(showToast.timer);
+          showToast.timer = setTimeout(() => {
+            toast.classList.remove('show');
+            toast.classList.remove('success');
+          }, 3200);
+        }
+
+        function showToast(message) {
+          const toast = $('#toast');
+          toast.textContent = message;
+          toast.classList.add('show');
+          toast.classList.remove('success');
+          clearTimeout(showToast.timer);
+          showToast.timer = setTimeout(() => toast.classList.remove('show'), 3200);
+        }
+
+        function setBusy(active, text = 'Проверка на отговора…') {
+          $('#busyText').textContent = text;
+          $('#busy').classList.toggle('show', active);
+        }
+
+        function gateStatus(now = Date.now()) {
+          const opensAt = parseTime(metadata.opensAt),
+            closesAt = parseTime(metadata.closesAt);
+          if (!Number.isFinite(opensAt) || !Number.isFinite(closesAt) || closesAt <= opensAt)
+            return 'invalid';
+          if (now < opensAt) return 'early';
+          if (now >= closesAt) return 'closed';
+          return 'open';
+        }
+
+        function renderGate(status) {
+          gate = status;
+          $('#topbar').hidden = true;
+          if (status === 'invalid') {
+            $('#app').innerHTML =
+              `<div class="hero"><div class="sigil">!</div><div class="eyebrow">Грешка в настройката</div><h1>Времето на лова не е зададено правилно</h1><p class="lead">Свържете се с организаторите. Началният и крайният час трябва да бъдат валидни.</p></div>`;
+            return;
+          }
+          if (status === 'early') {
+            $('#app').innerHTML =
+              `<div class="hero"><div class="sigil">⌛</div><div class="eyebrow">Ловът още не е започнал</div><h1>${esc(metadata.title || 'Лов на съкровища')}</h1><p class="lead">Приключението ще се отключи след:</p><div id="openingCountdown" class="countdown">${formatDuration(parseTime(metadata.opensAt) - Date.now())}</div><div class="notice">Оставете тази страница отворена. Тя ще се активира автоматично.</div></div>`;
+            return;
+          }
+          $('#app').innerHTML =
+            `<div class="hero"><div class="sigil">⌛</div><div class="eyebrow">Ловът приключи</div><h1>Времето изтече</h1><p class="lead">Този лов вече не приема нови отговори. Свържете се с организаторите, ако смятате, че има грешка.</p></div>`;
+        }
+
+        function tick() {
+          const status = gateStatus();
+          if (gate === 'early' && status === 'open') {
+            clearInterval(timer);
+            window.location.reload();
+            return;
+          }
+          if (status === 'early') {
+            const countdown = $('#openingCountdown');
+            if (countdown)
+              countdown.textContent = formatDuration(parseTime(metadata.opensAt) - Date.now());
+            return;
+          }
+          if (state?.finishedAt) return;
+          if (status === 'closed') {
+            renderGate('closed');
+            return;
+          }
+          if (!state?.startedAt) return;
+          const elapsed = $('#elapsed'),
+            remaining = $('#remaining');
+          if (elapsed)
+            elapsed.textContent = formatDuration(
+              Date.now() - state.startedAt + state.hintCount * PENALTY_MS
+            );
+          if (remaining)
+            remaining.textContent = formatDuration(parseTime(metadata.closesAt) - Date.now());
+        }
+
+        function renderRegistration() {
+          gate = 'open';
+          $('#topbar').hidden = true;
+          $('#app').innerHTML =
+            `<div class="hero"><div class="sigil">⌖</div><div class="eyebrow">Готови ли сте?</div><h1>${esc(metadata.title || 'Лов на съкровища')}</h1><p class="lead">Капитанът регистрира отбора. След началото ловът не може да бъде рестартиран или изигран повторно на това устройство.</p><form id="registration" class="card" novalidate><h2>Регистрация на отбор</h2><div class="field"><label for="teamName">Име на отбора</label><input id="teamName" maxlength="80" autocomplete="organization" placeholder="Например: Пазителите" required></div><div class="field"><label for="participantCode">Код на участника</label><input id="participantCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{5,6}" placeholder="5 или 6 цифри" required></div><button class="btn primary" type="submit">Започни лова</button></form></div>`;
+        }
+
+        function renderTopbar() {
+          $('#topbar').hidden = false;
+          const nSteps = Math.max(1, Number(metadata.nSteps) || 1);
+          $('#progress').style.width =
+            `${Math.min(100, ((state.currentIndex + 1) / nSteps) * 100)}%`;
+          $('#progressText').textContent = `Стъпка ${state.currentIndex + 1} от ${nSteps}`;
+          const end = state.finishedAt || Date.now();
+          $('#elapsed').textContent = formatDuration(
+            end - state.startedAt + state.hintCount * PENALTY_MS
+          );
+          $('#remaining').textContent =
+            state.finishedAt ? 'ЗАВЪРШЕН' : (
+              formatDuration(parseTime(metadata.closesAt) - Date.now())
+            );
+        }
+
+        function bagHtml() {
+          return `<section class="bag-card"><div class="bag-title">Торба с думи</div><div class="bag">${state.bag.length ? state.bag.map(word => `<span class="word">${esc(word)}</span>`).join('') : '<span class="empty-bag">Торбата е празна.</span>'}</div></section>`;
+        }
+
+        function hintHtml(step) {
+          const hint = step.metadata?.hint;
+          if (!hint) return '';
+          if (state.revealedHints.includes(state.currentIndex))
+            return `<section class="hint-box"><p><strong>Подсказка:</strong> ${esc(hint)}</p></section>`;
+          return `<section class="hint-box"><button id="revealHint" type="button">Разкрий подсказката<span class="penalty">Добавя 3 минути към крайното време</span></button></section>`;
+        }
+
+        function challengeHtml(step) {
+          if (step.type === 'word')
+            return `<div class="challenge"><div class="definition">${esc(step.definition || '')}</div><div class="field"><label for="answer">Вашата дума</label><input id="answer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Въведете думата"></div><button id="submitAnswer" class="btn primary">Провери отговора</button></div>`;
+          if (step.type === 'location') {
+            const scanSupported =
+              'BarcodeDetector' in window && navigator.mediaDevices?.getUserMedia;
+            return `<div class="challenge"><div class="scan-row"><div><label for="answer">Код на мястото</label><input id="answer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Въведете кода"></div>${scanSupported ? '<button id="startScanner" class="btn secondary" type="button">Сканирай</button>' : ''}</div><button id="submitAnswer" class="btn primary">Провери мястото</button></div>`;
+          }
+          if (step.type === 'sentence') {
+            let blank = 0;
+            const sentence = (step.sentence || [])
+              .map(part =>
+                part === '_' ?
+                  `<select class="sentenceBlank" data-blank="${blank++}" aria-label="Липсваща дума"><option value="">Избери дума…</option>${state.bag.map((word, index) => `<option value="${index}">${esc(word)}</option>`).join('')}</select>`
+                : `<span>${esc(part)}</span>`
+              )
+              .join('');
+            sentenceSelections = Array(blank).fill('');
+            return `<div class="challenge"><div class="sentence">${sentence}</div><button id="submitAnswer" class="btn primary">Подреди изречението</button></div>`;
+          }
+          return `<div class="challenge"><div class="notice">Стигнахте до края на историята.</div><button id="completeHunt" class="btn primary">Завърши</button></div>`;
+        }
+
+        function renderStep() {
+          gate = 'open';
+          renderTopbar();
+          const step = state.currentStep,
+            meta = step.metadata || {};
+          $('#app').innerHTML =
+            `${meta.image_url ? `<img class="step-image" src="${esc(meta.image_url)}" alt="Илюстрация към стъпката" onerror="this.remove()">` : ''}<article class="card"><div class="step-heading"><div><div class="eyebrow">${step.type === 'end' ? 'Последна стъпка' : 'Текуща следа'}</div><h1>${esc(meta.title || 'Без заглавие')}</h1></div><span class="step-count">${state.currentIndex + 1} / ${Number(metadata.nSteps) || '?'}</span></div><p class="description">${esc(meta.description || '')}</p>${hintHtml(step)}${challengeHtml(step)}</article>${bagHtml()}`;
+        }
+
+        function renderSummary() {
+          gate = 'summary';
+          $('#topbar').hidden = true;
+          const raw = state.finishedAt - state.startedAt;
+          const penalty = state.hintCount * PENALTY_MS;
+          $('#app').innerHTML =
+            `<div class="hero"><div class="sigil">★</div><div class="eyebrow">Ловът е завършен</div><h1>Поздравления, ${esc(state.teamName)}!</h1><p class="lead">Преминахте през всички следи и стигнахте до края на „${esc(metadata.title || 'лова')}“.</p><div class="stats"><div class="stat"><span>Начало</span><strong>${esc(formatDate(state.startedAt))}</strong></div><div class="stat"><span>Край</span><strong>${esc(formatDate(state.finishedAt))}</strong></div><div class="stat"><span>Чисто време</span><strong>${formatDuration(raw)}</strong></div><div class="stat"><span>Крайно време</span><strong>${formatDuration(raw + penalty)}</strong></div><div class="stat"><span>Подсказки</span><strong>${state.hintCount}</strong></div><div class="stat"><span>Наказание</span><strong>+${state.hintCount * 3} мин.</strong></div></div><div class="organizers"><strong>Последна задача</strong><p>Намерете организаторите на лова и им кажете, че отборът ви е завършил.</p></div></div>`;
+        }
+
+        function route() {
+          const status = gateStatus();
+          if (state?.finishedAt && state.completed) {
+            renderSummary();
+            return;
+          }
+          if (state?.finishedAt) {
+            renderStep();
+            return;
+          }
+          if (status !== 'open') {
+            renderGate(status);
+            return;
+          }
+          if (state?.broken) {
+            $('#topbar').hidden = true;
+            $('#app').innerHTML =
+              `<div class="hero"><div class="sigil">!</div><div class="eyebrow">Необходима е помощ</div><h1>Запазеният напредък е повреден</h1><p class="lead">За да се запази забраната за рестартиране, ловът не може да бъде започнат отново. Свържете се с организаторите.</p></div>`;
+            return;
+          }
+          if (!state) renderRegistration();
+          else renderStep();
+        }
+
+        async function registerTeam(event) {
+          event.preventDefault();
+          const teamName = $('#teamName').value.trim();
+          const participantCode = $('#participantCode').value.trim();
+          if (!teamName) {
+            showToast('Въведете име на отбора.');
+            return;
+          }
+          if (!/^\d{5,6}$/.test(participantCode)) {
+            showToast('Кодът на участника трябва да съдържа 5 или 6 цифри.');
+            return;
+          }
+          setBusy(true, 'Ловът започва…');
+          try {
+            const first = await decodeStep(huntBytes, START_PASSWORD);
+            state = {
+              version: 1,
+              teamId: crypto.randomUUID(),
+              teamName,
+              participantCode,
+              startedAt: Date.now(),
+              finishedAt: null,
+              completed: false,
+              currentIndex: 0,
+              currentStep: first.data,
+              nextEncoded: bytesToBase64(first.nextEncodedStep),
+              bag: [],
+              revealedHints: [],
+              hintCount: 0
+            };
+            saveState();
+            sendEvent('start', { teamName, participantCode });
+            renderStep();
+          } catch (error) {
+            console.error(error);
+            showToast('Ловът не можа да бъде отключен. Потърсете организаторите.');
+          } finally {
+            setBusy(false);
+          }
+        }
+
+        function answerForCurrentStep() {
+          const step = state.currentStep;
+          if (step.type === 'word') return $('#answer').value.trim().toLocaleLowerCase('bg-BG');
+          if (step.type === 'location') return $('#answer').value.trim();
+          if (step.type === 'sentence') {
+            const selects = Array.from(document.querySelectorAll('.sentenceBlank'));
+            if (selects.some(select => select.value === '')) return '';
+            return selects.map(select => state.bag[Number(select.value)]).join('::');
+          }
+          return '';
+        }
+
+        async function submitAnswer() {
+          const password = answerForCurrentStep();
+          if (!password) {
+            showToast(
+              state.currentStep.type === 'sentence' ?
+                'Попълнете всички празни места.'
+              : 'Въведете отговор.'
+            );
+            return;
+          }
+          setBusy(true);
+          try {
+            const completedStep = state.currentStep;
+            const result = await decodeStep(base64ToBytes(state.nextEncoded), password);
+            if (completedStep.type === 'word') state.bag.push(password);
+            if (completedStep.type === 'sentence') {
+              const used = Array.from(document.querySelectorAll('.sentenceBlank'))
+                .map(select => Number(select.value))
+                .sort((a, b) => b - a);
+              for (const index of used) state.bag.splice(index, 1);
+            }
+            state.currentIndex += 1;
+            state.currentStep = result.data;
+            state.nextEncoded = bytesToBase64(result.nextEncodedStep);
+            sendEvent('unlock', {
+              stepIndex: state.currentIndex,
+              stepNumber: state.currentIndex + 1,
+              password
+            });
+            if (result.data.type === 'end') {
+              state.finishedAt = Date.now();
+              sendEvent('finish');
+            }
+            saveState();
+            renderStep();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } catch (error) {
+            if (error?.name === 'OperationError') showToast('Грешен отговор. Опитайте отново.');
+            else {
+              console.error(error);
+              showToast('Отговорът не можа да бъде проверен.');
+            }
+          } finally {
+            setBusy(false);
+          }
+        }
+
+        function openHintDialog() {
+          if (state.revealedHints.includes(state.currentIndex)) return;
+          $('#hintModal').hidden = false;
+          $('#cancelHint').focus();
+        }
+
+        function closeHintDialog() {
+          $('#hintModal').hidden = true;
+        }
+
+        function revealHint() {
+          if (state.revealedHints.includes(state.currentIndex)) {
+            closeHintDialog();
+            return;
+          }
+          closeHintDialog();
+          state.revealedHints.push(state.currentIndex);
+          state.hintCount += 1;
+          saveState();
+          sendEvent('hint', {
+            stepIndex: state.currentIndex,
+            stepNumber: state.currentIndex + 1,
+            hintsUsed: state.hintCount
+          });
+          renderStep();
+        }
+
+        function updateSentenceChoices(changedSelect) {
+          const selects = Array.from(document.querySelectorAll('.sentenceBlank'));
+          if (changedSelect.value) {
+            for (const select of selects) {
+              if (select !== changedSelect && select.value === changedSelect.value)
+                select.value = '';
+            }
+          }
+          for (const select of selects)
+            for (const option of Array.from(select.options)) option.disabled = false;
+        }
+
+        async function startScanner() {
+          try {
+            const detector = new BarcodeDetector({ formats: ['qr_code'] });
+            scannerStream = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: { ideal: 'environment' } },
+              audio: false
+            });
+            const video = $('#scannerVideo');
+            video.srcObject = scannerStream;
+            await video.play();
+            $('#scanner').classList.add('show');
+            const scan = async () => {
+              if (!scannerStream) return;
+              try {
+                const codes = await detector.detect(video);
+                if (codes.length && codes[0].rawValue) {
+                  $('#answer').value = codes[0].rawValue;
+                  stopScanner();
+                  showSuccess('Кодът е разпознат. Натиснете „Провери мястото“.');
+                  return;
+                }
+              } catch (_) {}
+              scannerFrame = requestAnimationFrame(scan);
+            };
+            scannerFrame = requestAnimationFrame(scan);
+          } catch (error) {
+            console.error(error);
+            stopScanner();
+            showToast('Камерата не е достъпна. Въведете кода ръчно.');
+          }
+        }
+
+        function stopScanner() {
+          cancelAnimationFrame(scannerFrame);
+          scannerStream?.getTracks().forEach(track => track.stop());
+          scannerStream = null;
+          const video = $('#scannerVideo');
+          video.pause();
+          video.srcObject = null;
+          $('#scanner').classList.remove('show');
+        }
+
+        document.addEventListener('submit', event => {
+          if (event.target.id === 'registration') registerTeam(event);
+        });
+        document.addEventListener('click', event => {
+          if (event.target.id === 'hintModal') {
+            closeHintDialog();
+            return;
+          }
+          const button = event.target.closest('button');
+          if (!button) return;
+          if (button.id === 'submitAnswer') submitAnswer();
+          if (button.id === 'revealHint') openHintDialog();
+          if (button.id === 'cancelHint') closeHintDialog();
+          if (button.id === 'acceptHint') revealHint();
+          if (button.id === 'completeHunt') {
+            state.completed = true;
+            saveState();
+            renderSummary();
+          }
+          if (button.id === 'startScanner') startScanner();
+          if (button.id === 'stopScanner') stopScanner();
+        });
+        document.addEventListener('change', event => {
+          if (event.target.matches('.sentenceBlank')) updateSentenceChoices(event.target);
+        });
+        document.addEventListener('keydown', event => {
+          if (event.key === 'Enter' && event.target.id === 'answer') {
+            event.preventDefault();
+            submitAnswer();
+          }
+          if (event.key === 'Escape' && !$('#hintModal').hidden) closeHintDialog();
+        });
+        window.addEventListener('pagehide', stopScanner);
+
+        async function initialize() {
+          try {
+            const [metadataResponse, huntResponse] = await Promise.all([
+              fetch('./hunt.metadata.json', { cache: 'no-store' }),
+              fetch('./hunt.bin', { cache: 'no-store' })
+            ]);
+            if (!metadataResponse.ok || !huntResponse.ok)
+              throw new Error('Файловете на лова не са достъпни.');
+            metadata = await metadataResponse.json();
+            huntBytes = new Uint8Array(await huntResponse.arrayBuffer());
+            document.title = metadata.title || 'Лов на съкровища';
+            storageKey = `hunt-player:${await huntHash()}`;
+            state = loadState();
+            route();
+            clearInterval(timer);
+            timer = setInterval(tick, 1000);
+            tick();
+          } catch (error) {
+            console.error(error);
+            $('#topbar').hidden = true;
+            $('#app').innerHTML =
+              `<div class="hero"><div class="sigil">!</div><div class="eyebrow">Грешка при зареждане</div><h1>Ловът не е достъпен</h1><p class="lead">Проверете връзката си и опитайте отново. Ако проблемът остане, потърсете организаторите.</p></div>`;
+          }
+        }
+
+        initialize();
+      })();
+    </script>
+  </body>
+</html>
